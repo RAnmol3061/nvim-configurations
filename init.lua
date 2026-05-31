@@ -191,7 +191,7 @@ do
     virtual_text = true, -- Text shows up at the end of the line
     virtual_lines = false, -- Text shows up underneath the line, with virtual lines
 
-    -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
+    -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`in
     jump = {
       on_jump = function(_, bufnr)
         vim.diagnostic.open_float {
@@ -578,6 +578,28 @@ do
   -- Shortcut for searching your Neovim configuration files
   vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end, { desc = '[S]earch [N]eovim files' })
 end
+
+  -- Shortcut to run files of different programming language
+  vim.keymap.set("n", "<leader>r", function()
+  -- Get the filetype and full filepath
+  local filetype = vim.bo.filetype
+  local filename = vim.fn.expand("%")
+  local safepath = string.format('"%s"', filename)
+  local cmd = ""
+
+  -- Determine the command based on the filetype
+  if filetype == "javascript" or filetype == "typescript" then
+    cmd = "deno run " .. safepath
+  elseif  filetype == "python" then
+    cmd = "python3 " .. safepath
+  else
+    print("No run command configured for filetype: " .. filetype)
+    return
+  end
+
+  -- Execute the command in a terminal split
+  vim.cmd("split | term " .. cmd)
+  end, {desc = "Run current file based on type"})
 
 -- ============================================================
 -- SECTION 5: LSP
